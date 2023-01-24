@@ -1,22 +1,24 @@
 from flask import Flask, render_template
+import pandas as pd
 
 app = Flask(__name__)
 
-@app.route("/")
 
+@app.route("/")
 def home():
     return render_template("home.html")
 
 @app.route("/api/v1/<station>/<date>")
 def about(station, date):
+    filepath = "data_small/TG_STAID" + str(station).zfill(6) + ".txt"
+    data = pd.read_csv(filepath, skiprows=20, parse_dates=["    DATE"])
 
-    # data = pandas.read_csv("")
     # temperature = data.station(date)
-    temperature = 23
+    temperature = data.loc[data["    DATE"] == date]["   TG"].squeeze() / 10
     # return render_template("about.html")
     return {"Station: ": station,
             "Date: ": date,
             "Temperature: ": temperature}
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
